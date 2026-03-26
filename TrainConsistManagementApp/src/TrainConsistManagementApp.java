@@ -1,46 +1,49 @@
-import java.util.HashSet;
-import java.util.Set;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * MAIN CLASS: TrainConsistManagementApp
- * Use Case 3: Track Unique Bogie IDs
- * Description: Ensures that duplicate bogie IDs are not added using HashSet.
+ * Use Case 4: Maintain Ordered Bogie Consist
+ * Description: Models the physical chaining of train bogies using LinkedList.
  * Author: Developer
- * Version: 3.0
+ * Version: 4.0
  */
 public class TrainConsistManagementApp {
 
     public static void main(String[] args) {
         System.out.println("------------------------------------");
-        System.out.println(" UC3 Track Unique Bogie IDs ");
-        System.out.println(" ===================================\n");
+        System.out.println(" UC4 Maintain Ordered Bogie Consist ");
+        System.out.println(" ------------------------------------\n");
 
-        // 1. Create a Set to store unique bogie IDs
-        // HashSet is used because it automatically prevents duplicate entries
-        Set<String> bogieIds = new HashSet<>();
+        // 1. Create a LinkedList to hold the train consist
+        // LinkedList is ideal for modeling a train as it allows efficient
+        // insertions and deletions at any position.
+        LinkedList<String> trainConsist = new LinkedList<>();
 
-        // 2. ADD Bogie IDs (including intentional duplicates)
-        // add() inserts bogie IDs into the set
-        bogieIds.add("B0101");
-        bogieIds.add("B0102");
-        bogieIds.add("B0103");
-        bogieIds.add("B0104");
+        // 2. ADD bogies in sequence (Create the initial chain)
+        trainConsist.add("Engine");
+        trainConsist.add("Sleeper");
+        trainConsist.add("AC Coach");
+        trainConsist.add("Cargo");
+        trainConsist.add("Guard Coach");
 
-        // 3. Attempting to add duplicate entries
-        // These will be ignored internally by the HashSet implementation
-        System.out.println("Attempting to add duplicate IDs: B0101, B0102...");
-        bogieIds.add("B0101"); // Duplicate entry
-        bogieIds.add("B0102"); // Duplicate entry
+        System.out.println("Initial Train Formation: " + trainConsist);
 
-        // 4. Display Unique Bogie Identifiers
-        // Notice that the output will only contain unique IDs
-        System.out.println("\nFinal List of Unique Bogie IDs:");
-        System.out.println(bogieIds);
+        // 3. INSERT a bogie at a specific position (e.g., Pantry Car at index 2)
+        System.out.println("\nInserting 'Pantry Car' at position 2...");
+        trainConsist.add(2, "Pantry Car");
+        System.out.println("Updated Formation: " + trainConsist);
 
-        // 5. Display Total Count
-        System.out.println("Total Unique Bogies tracked: " + bogieIds.size());
+        // 4. REMOVE bogies from front and rear
+        System.out.println("\nDetaching the first and last bogies...");
+        trainConsist.removeFirst(); // Removes Engine
+        trainConsist.removeLast();  // Removes Guard Coach
+
+        // 5. Display updated train structure
+        System.out.println("Final Ordered Train Consist: " + trainConsist);
+        System.out.println("Current Bogie Count: " + trainConsist.size());
         System.out.println("------------------------------------");
 
-        System.out.println("Business Rule Validated: No duplicate IDs allowed in the consist.");
+        System.out.println("Physical chaining logic validated using LinkedList nodes.");
     }
 }
