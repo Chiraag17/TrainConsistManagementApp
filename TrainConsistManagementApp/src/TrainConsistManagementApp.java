@@ -1,49 +1,46 @@
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * MAIN CLASS: TrainConsistManagementApp
- * Use Case 2: Add Passenger Bogies to Train
- * Description: Demonstrates dynamic management of passenger bogies using ArrayList.
+ * Use Case 3: Track Unique Bogie IDs
+ * Description: Ensures that duplicate bogie IDs are not added using HashSet.
  * Author: Developer
- * Version: 2.0
+ * Version: 3.0
  */
 public class TrainConsistManagementApp {
 
     public static void main(String[] args) {
-        // Display Header
-        System.out.println("---------------*************");
-        System.out.println(" UC2 Add Passenger Bogies to Train ");
-        System.out.println("---------------*********\n");
+        System.out.println("------------------------------------");
+        System.out.println(" UC3 Track Unique Bogie IDs ");
+        System.out.println(" ===================================\n");
 
-        // 1. CREATE: Initialize an ArrayList to hold passenger bogies
-        List<String> passengerBogies = new ArrayList<>();
+        // 1. Create a Set to store unique bogie IDs
+        // HashSet is used because it automatically prevents duplicate entries
+        Set<String> bogieIds = new HashSet<>();
 
-        // 2. ADD: Attach new bogies to the train (Sleeper, AC Chair, First Class)
-        passengerBogies.add("Sleeper");
-        passengerBogies.add("AC Chair");
-        passengerBogies.add("First Class");
+        // 2. ADD Bogie IDs (including intentional duplicates)
+        // add() inserts bogie IDs into the set
+        bogieIds.add("B0101");
+        bogieIds.add("B0102");
+        bogieIds.add("B0103");
+        bogieIds.add("B0104");
 
-        // 3. READ: Display the current consist after additions
-        System.out.println("Current Train Consist: " + passengerBogies);
-        System.out.println("Initial Bogie Count: " + passengerBogies.size());
+        // 3. Attempting to add duplicate entries
+        // These will be ignored internally by the HashSet implementation
+        System.out.println("Attempting to add duplicate IDs: B0101, B0102...");
+        bogieIds.add("B0101"); // Duplicate entry
+        bogieIds.add("B0102"); // Duplicate entry
 
-        // 4. DELETE: Remove one bogie (e.g., AC Chair)
-        System.out.println("\nRemoving 'AC Chair' from the consist...");
-        passengerBogies.remove("AC Chair");
+        // 4. Display Unique Bogie Identifiers
+        // Notice that the output will only contain unique IDs
+        System.out.println("\nFinal List of Unique Bogie IDs:");
+        System.out.println(bogieIds);
 
-        // 5. CHECK: Use contains() to check if 'Sleeper' exists
-        String checkBogie = "Sleeper";
-        if (passengerBogies.contains(checkBogie)) {
-            System.out.println("Status: " + checkBogie + " Bogie exists in the train.");
-        } else {
-            System.out.println("Status: " + checkBogie + " Bogie not found.");
-        }
+        // 5. Display Total Count
+        System.out.println("Total Unique Bogies tracked: " + bogieIds.size());
+        System.out.println("------------------------------------");
 
-        // 6. FINAL STATE: Display the final consist summary
-        System.out.println("\nFinal Train Consist Summary:");
-        System.out.println(passengerBogies);
-        System.out.println("Final Bogie Count: " + passengerBogies.size());
-        System.out.println("----------------------------------------------");
+        System.out.println("Business Rule Validated: No duplicate IDs allowed in the consist.");
     }
 }
