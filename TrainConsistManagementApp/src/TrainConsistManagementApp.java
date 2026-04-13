@@ -1,49 +1,67 @@
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
+/**
+ * BOGIE CLASS: Data Model
+ * Represents a physical bogie with attributes for name and capacity.
+ */
+class Bogie {
+    private String name;
+    private int capacity;
+
+    public Bogie(String name, int capacity) {
+        this.name = name;
+        this.capacity = capacity;
+    }
+
+    public String getName() { return name; }
+    public int getCapacity() { return capacity; }
+
+    @Override
+    public String toString() {
+        return String.format("%-15s | Capacity: %d", name, capacity);
+    }
+}
 
 /**
  * MAIN CLASS: TrainConsistManagementApp
- * Use Case 6: Map Bogie to Capacity
- * Description: Associates each bogie type with its specific seating or load capacity using HashMap.
+ * Use Case 7: Sort Bogies by Capacity (Comparator)
+ * Description: Uses custom objects and Comparator to rank bogies by their capacity.
  * Author: Developer
- * Version: 6.0
+ * Version: 7.0
  */
 public class TrainConsistManagementApp {
 
     public static void main(String[] args) {
         System.out.println("------------------------------------");
-        System.out.println(" UC6 Map Bogie to Capacity (HashMap) ");
+        System.out.println(" UC7 Sort Bogies by Capacity (Comparator) ");
         System.out.println(" ===================================\n");
 
-        // 1. Initialize HashMap
-        // Key: Bogie Name (String), Value: Capacity (Integer)
-        Map<String, Integer> bogieCapacityMap = new HashMap<>();
+        // 1. Create a List of Bogie objects
+        List<Bogie> passengerBogies = new ArrayList<>();
 
-        // 2. Map bogies to their respective capacities (put method)
-        System.out.println("Mapping bogie types to operational capacities...");
-        bogieCapacityMap.put("Sleeper", 72);
-        bogieCapacityMap.put("AC Chair", 56);
-        bogieCapacityMap.put("First Class", 24);
-        bogieCapacityMap.put("Cargo-Rectangular", 1000); // capacity in kg/units
-        bogieCapacityMap.put("Cylindrical-Tanker", 500);
+        // 2. Add passenger bogies with their capacities
+        passengerBogies.add(new Bogie("Sleeper", 72));
+        passengerBogies.add(new Bogie("AC Chair", 56));
+        passengerBogies.add(new Bogie("First Class", 24));
+        passengerBogies.add(new Bogie("General", 90));
 
-        // 3. Fast Lookup Example
-        // HashMap allows O(1) time complexity to retrieve a value using its key
-        String searchBogie = "Sleeper";
-        if (bogieCapacityMap.containsKey(searchBogie)) {
-            System.out.println("Lookup: " + searchBogie + " has a capacity of " + bogieCapacityMap.get(searchBogie) + " units.");
-        }
+        System.out.println("Unsorted Passenger Bogies:");
+        passengerBogies.forEach(System.out::println);
 
-        // 4. Iterate through the map using entrySet()
-        // This allows us to access both the Bogie Name (Key) and Capacity (Value)
-        System.out.println("\n--- Current Bogie Capacity Directory ---");
-        for (Map.Entry<String, Integer> entry : bogieCapacityMap.entrySet()) {
-            System.out.println("Bogie Type: " + entry.getKey() + " | Capacity: " + entry.getValue());
+        // 3. Apply Comparator to sort by capacity (Ascending)
+        // Key Concept: Comparator.comparingInt defines the business logic for sorting
+        passengerBogies.sort(Comparator.comparingInt(Bogie::getCapacity));
+
+        // 4. Display Sorted Bogies
+        System.out.println("\nPassenger Bogies Sorted by Capacity (Low to High):");
+        for (Bogie b : passengerBogies) {
+            System.out.println(b);
         }
 
         // 5. Summary
-        System.out.println("\nTotal bogie types mapped: " + bogieCapacityMap.size());
-        System.out.println("------------------------------------");
-        System.out.println("Success: Key-Value association established for operational analytics.");
+        System.out.println("\n------------------------------------");
+        System.out.println("Success: Bogies ranked for optimal capacity planning.");
     }
 }
