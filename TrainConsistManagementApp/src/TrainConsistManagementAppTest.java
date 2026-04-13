@@ -11,50 +11,37 @@ class TrainConsistManagementAppTest {
     }
 
     @Test
-    void testCargo_SafeAssignment() {
-        GoodsBogie cylindrical = new GoodsBogie("Cylindrical");
-        // Should not throw exception
-        assertDoesNotThrow(() -> cylindrical.assignCargo("Petroleum"));
-        assertEquals("Petroleum", cylindrical.getCargo());
+    void testSort_BasicSorting() {
+        int[] input = {72, 56, 24, 70, 60};
+        int[] expected = {24, 56, 60, 70, 72};
+        assertArrayEquals(expected, app.bubbleSort(input), "Array should be sorted in ascending order.");
     }
 
     @Test
-    void testCargo_UnsafeAssignmentHandled() {
-        GoodsBogie rectangular = new GoodsBogie("Rectangular");
-        // Verify CargoSafetyException is raised
-        assertThrows(CargoSafetyException.class, () -> {
-            rectangular.assignCargo("Petroleum");
-        }, "Petroleum in Rectangular bogie must trigger safety exception.");
+    void testSort_AlreadySortedArray() {
+        int[] input = {24, 56, 60, 70, 72};
+        int[] expected = {24, 56, 60, 70, 72};
+        assertArrayEquals(expected, app.bubbleSort(input), "Already sorted array should remain unchanged.");
     }
 
     @Test
-    void testCargo_CargoNotAssignedAfterFailure() {
-        GoodsBogie rectangular = new GoodsBogie("Rectangular");
-        try {
-            rectangular.assignCargo("Petroleum");
-        } catch (CargoSafetyException e) {
-            // Expected catch
-        }
-        // Verify cargo remains "Empty" and not "Petroleum"
-        assertNotEquals("Petroleum", rectangular.getCargo());
+    void testSort_DuplicateValues() {
+        int[] input = {72, 56, 56, 24};
+        int[] expected = {24, 56, 56, 72};
+        assertArrayEquals(expected, app.bubbleSort(input), "Sorting should handle duplicate capacities correctly.");
     }
 
     @Test
-    void testCargo_ProgramContinuesAfterException() {
-        GoodsBogie rect = new GoodsBogie("Rectangular");
-        GoodsBogie cyl = new GoodsBogie("Cylindrical");
-
-        app.processCargoAssignment(rect, "Petroleum"); // Throws and catches
-        app.processCargoAssignment(cyl, "Petroleum");  // Should still execute
-
-        assertEquals("Petroleum", cyl.getCargo(), "Program should continue to process next assignment.");
+    void testSort_SingleElementArray() {
+        int[] input = {50};
+        int[] expected = {50};
+        assertArrayEquals(expected, app.bubbleSort(input), "Single element array should remain unchanged.");
     }
 
     @Test
-    void testCargo_FinallyBlockExecution() {
-        // The finally block logic is verified via console output in the main app,
-        // but ensure the logic does not interfere with valid assignments.
-        GoodsBogie bogie = new GoodsBogie("Rectangular");
-        assertDoesNotThrow(() -> app.processCargoAssignment(bogie, "Coal"));
+    void testSort_AllEqualValues() {
+        int[] input = {40, 40, 40};
+        int[] expected = {40, 40, 40};
+        assertArrayEquals(expected, app.bubbleSort(input), "Array with identical values should remain unchanged.");
     }
 }

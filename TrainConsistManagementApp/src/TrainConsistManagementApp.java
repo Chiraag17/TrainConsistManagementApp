@@ -1,89 +1,59 @@
-import java.util.ArrayList;
-import java.util.List;
-
-/**
- * CUSTOM RUNTIME EXCEPTION: CargoSafetyException
- * Represents a safety violation during dynamic cargo assignment.
- */
-class CargoSafetyException extends RuntimeException {
-    public CargoSafetyException(String message) {
-        super(message);
-    }
-}
-
-/**
- * GOODS BOGIE CLASS: Data Model
- * Handles safe cargo assignment with compatibility logic.
- */
-class GoodsBogie {
-    private String shape;
-    private String cargo = "Empty";
-
-    public GoodsBogie(String shape) {
-        this.shape = shape;
-    }
-
-    public void assignCargo(String cargoName) {
-        // Business Rule: Petroleum is unsafe for Rectangular bogies
-        if (this.shape.equalsIgnoreCase("Rectangular") && cargoName.equalsIgnoreCase("Petroleum")) {
-            throw new CargoSafetyException("HAZARD: Petroleum cannot be assigned to Rectangular bogie!");
-        }
-        this.cargo = cargoName;
-    }
-
-    public String getShape() { return shape; }
-    public String getCargo() { return cargo; }
-
-    @Override
-    public String toString() {
-        return "Bogie Shape: " + shape + " | Cargo: " + cargo;
-    }
-}
-
 /**
  * MAIN CLASS: TrainConsistManagementApp
- * Use Case 15: Safe Cargo Assignment Using try-catch-finally
- * Description: Implements structured error handling for dynamic operational safety.
+ * Use Case 16: Sort Passenger Bogies by Capacity (Bubble Sort)
+ * Description: Implements a manual sorting algorithm to understand internal data organization.
  * Author: Developer
- * Version: 15.0
+ * Version: 16.0
  */
 public class TrainConsistManagementApp {
 
-    public void processCargoAssignment(GoodsBogie bogie, String cargo) {
-        try {
-            System.out.println("Processing: Assigning " + cargo + " to " + bogie.getShape() + " bogie...");
-            bogie.assignCargo(cargo);
-            System.out.println("Result: Assignment Successful.");
-        } catch (CargoSafetyException e) {
-            System.err.println("Safety Alert: " + e.getMessage());
-        } finally {
-            System.out.println("System: Safety check for assignment completed.");
+    /**
+     * Manual implementation of Bubble Sort Algorithm.
+     * Compares adjacent elements and swaps them to arrange in ascending order.
+     */
+    public int[] bubbleSort(int[] capacities) {
+        int n = capacities.length;
+        // Outer loop for multiple passes
+        for (int i = 0; i < n - 1; i++) {
+            // Inner loop for adjacent comparison
+            for (int j = 0; j < n - i - 1; j++) {
+                if (capacities[j] > capacities[j + 1]) {
+                    // Swapping Logic
+                    int temp = capacities[j];
+                    capacities[j] = capacities[j + 1];
+                    capacities[j + 1] = temp;
+                }
+            }
         }
+        return capacities;
     }
 
     public static void main(String[] args) {
         TrainConsistManagementApp app = new TrainConsistManagementApp();
 
         System.out.println("------------------------------------");
-        System.out.println(" UC15 Safe Cargo Assignment (try-catch-finally) ");
+        System.out.println(" UC16 Sort Bogies (Bubble Sort)     ");
         System.out.println(" ===================================\n");
 
-        GoodsBogie rectangularBogie = new GoodsBogie("Rectangular");
-        GoodsBogie cylindricalBogie = new GoodsBogie("Cylindrical");
+        int[] capacities = {72, 56, 24, 70, 60};
 
-        // 1. Valid Assignment
-        app.processCargoAssignment(cylindricalBogie, "Petroleum");
+        System.out.print("Unsorted Capacities: ");
+        printArray(capacities);
 
-        System.out.println();
+        // Sorting manually without library methods
+        app.bubbleSort(capacities);
 
-        // 2. Unsafe Assignment
-        app.processCargoAssignment(rectangularBogie, "Petroleum");
-
-        System.out.println("\nFinal Cargo Status:");
-        System.out.println(cylindricalBogie);
-        System.out.println(rectangularBogie);
+        System.out.print("Sorted Capacities (Manual Sort): ");
+        printArray(capacities);
 
         System.out.println("\n------------------------------------");
-        System.out.println("Success: Safety rules enforced with structured handling.");
+        System.out.println("Success: Sorting logic implemented using Bubble Sort.");
+    }
+
+    private static void printArray(int[] arr) {
+        for (int val : arr) {
+            System.out.print(val + " ");
+        }
+        System.out.println();
     }
 }
