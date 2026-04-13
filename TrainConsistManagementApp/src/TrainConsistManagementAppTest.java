@@ -4,44 +4,42 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class TrainConsistManagementAppTest {
     private TrainConsistManagementApp app;
+    private String[] consist;
 
     @BeforeEach
     void setUp() {
         app = new TrainConsistManagementApp();
+        consist = new String[]{"BG101", "BG205", "BG309", "BG412", "BG550"};
     }
 
     @Test
-    void testSort_BasicAlphabeticalSorting() {
-        String[] input = {"Sleeper", "AC Chair", "First Class", "General", "Luxury"};
-        String[] expected = {"AC Chair", "First Class", "General", "Luxury", "Sleeper"};
-        assertArrayEquals(expected, app.sortBogieNames(input), "Bogie names should be sorted alphabetically.");
+    void testSearch_BogieFound() {
+        // Searching for an existing middle element
+        assertTrue(app.searchBogieById(consist, "BG309"), "Should return true for existing ID 'BG309'");
     }
 
     @Test
-    void testSort_UnsortedInput() {
-        String[] input = {"Luxury", "General", "Sleeper", "AC Chair"};
-        String[] expected = {"AC Chair", "General", "Luxury", "Sleeper"};
-        assertArrayEquals(expected, app.sortBogieNames(input));
+    void testSearch_BogieNotFound() {
+        // Searching for a non-existent ID
+        assertFalse(app.searchBogieById(consist, "BG999"), "Should return false for non-existent ID 'BG999'");
     }
 
     @Test
-    void testSort_AlreadySortedArray() {
-        String[] input = {"AC Chair", "First Class", "General"};
-        String[] expected = {"AC Chair", "First Class", "General"};
-        assertArrayEquals(expected, app.sortBogieNames(input), "Already sorted array should remain unchanged.");
+    void testSearch_FirstElementMatch() {
+        // Verifying match at index 0
+        assertTrue(app.searchBogieById(consist, "BG101"), "Search should succeed at the first position.");
     }
 
     @Test
-    void testSort_DuplicateBogieNames() {
-        String[] input = {"Sleeper", "AC Chair", "Sleeper", "General"};
-        String[] expected = {"AC Chair", "General", "Sleeper", "Sleeper"};
-        assertArrayEquals(expected, app.sortBogieNames(input), "Duplicates should be retained and positioned correctly.");
+    void testSearch_LastElementMatch() {
+        // Verifying match at the final index
+        assertTrue(app.searchBogieById(consist, "BG550"), "Search should succeed at the last position.");
     }
 
     @Test
-    void testSort_SingleElementArray() {
-        String[] input = {"Sleeper"};
-        String[] expected = {"Sleeper"};
-        assertArrayEquals(expected, app.sortBogieNames(input));
+    void testSearch_SingleElementArray() {
+        // Verifying search logic with only one item
+        String[] singleConsist = {"BG101"};
+        assertTrue(app.searchBogieById(singleConsist, "BG101"), "Search should work for single element arrays.");
     }
 }
