@@ -1,70 +1,81 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
- * GOODS BOGIE CLASS: Data Model
- * Represents a goods bogie with its shape and assigned cargo.
+ * BOGIE CLASS: Data Model
+ * Represents a physical bogie with attributes for name and capacity.
  */
-class GoodsBogie {
-    private String type; // e.g., "Cylindrical", "Rectangular"
-    private String cargo; // e.g., "Petroleum", "Coal"
+class Bogie {
+    private String name;
+    private int capacity;
 
-    public GoodsBogie(String type, String cargo) {
-        this.type = type;
-        this.cargo = cargo;
+    public Bogie(String name, int capacity) {
+        this.name = name;
+        this.capacity = capacity;
     }
 
-    public String getType() { return type; }
-    public String getCargo() { return cargo; }
-
-    @Override
-    public String toString() {
-        return String.format("Type: %-12s | Cargo: %-10s", type, cargo);
-    }
+    public int getCapacity() { return capacity; }
 }
 
 /**
  * MAIN CLASS: TrainConsistManagementApp
- * Use Case 12: Safety Compliance Check for Goods Bogies
- * Description: Uses Stream.allMatch() to enforce domain-specific cargo safety rules.
+ * Use Case 13: Performance Comparison (Loops vs Streams)
+ * Description: Benchmarks execution time between imperative loops and declarative streams.
  * Author: Developer
- * Version: 12.0
+ * Version: 13.0
  */
 public class TrainConsistManagementApp {
 
-    /**
-     * Business Rule: Cylindrical bogies MUST only carry Petroleum.
-     * All other bogie types can carry any cargo.
-     */
-    public boolean checkSafetyCompliance(List<GoodsBogie> bogies) {
-        return bogies.stream().allMatch(b -> {
-            if (b.getType().equalsIgnoreCase("Cylindrical")) {
-                return b.getCargo().equalsIgnoreCase("Petroleum");
+    // Method using Traditional Loop
+    public List<Bogie> filterWithLoop(List<Bogie> bogies, int threshold) {
+        List<Bogie> filtered = new ArrayList<>();
+        for (Bogie b : bogies) {
+            if (b.getCapacity() > threshold) {
+                filtered.add(b);
             }
-            return true; // Non-cylindrical bogies are always compliant in this UC
-        });
+        }
+        return filtered;
+    }
+
+    // Method using Java Streams
+    public List<Bogie> filterWithStream(List<Bogie> bogies, int threshold) {
+        return bogies.stream()
+                .filter(b -> b.getCapacity() > threshold)
+                .collect(Collectors.toList());
     }
 
     public static void main(String[] args) {
         TrainConsistManagementApp app = new TrainConsistManagementApp();
+        List<Bogie> largeTrain = new ArrayList<>();
+
+        // 1. Prepare Large Dataset
+        for (int i = 0; i < 10000; i++) {
+            largeTrain.add(new Bogie("Bogie-" + i, (int) (Math.random() * 100)));
+        }
 
         System.out.println("------------------------------------");
-        System.out.println(" UC12 Safety Compliance Check       ");
+        System.out.println(" UC13 Performance Comparison (Loops vs Streams) ");
         System.out.println(" ===================================\n");
 
-        List<GoodsBogie> goodsFormation = new ArrayList<>();
-        goodsFormation.add(new GoodsBogie("Rectangular", "Coal"));
-        goodsFormation.add(new GoodsBogie("Cylindrical", "Petroleum"));
-        goodsFormation.add(new GoodsBogie("Open", "Iron Ore"));
+        // 2. Measure Loop Performance
+        long startTimeLoop = System.nanoTime();
+        List<Bogie> loopResult = app.filterWithLoop(largeTrain, 60);
+        long endTimeLoop = System.nanoTime();
+        long durationLoop = endTimeLoop - startTimeLoop;
 
-        System.out.println("Inspecting Goods Formation:");
-        goodsFormation.forEach(System.out::println);
+        // 3. Measure Stream Performance
+        long startTimeStream = System.nanoTime();
+        List<Bogie> streamResult = app.filterWithStream(largeTrain, 60);
+        long endTimeStream = System.nanoTime();
+        long durationStream = endTimeStream - startTimeStream;
 
-        boolean isSafe = app.checkSafetyCompliance(goodsFormation);
-
-        System.out.println("\nSafety Status: " + (isSafe ? "✅ COMPLIANT" : "❌ HAZARD DETECTED"));
+        // 4. Display Results
+        System.out.println("Loop Filter Time   : " + durationLoop + " ns");
+        System.out.println("Stream Filter Time : " + durationStream + " ns");
+        System.out.println("Results Match      : " + (loopResult.size() == streamResult.size()));
 
         System.out.println("\n------------------------------------");
-        System.out.println("Success: Safety rules enforced via Stream validation.");
+        System.out.println("Success: Benchmarking completed with System.nanoTime().");
     }
 }
