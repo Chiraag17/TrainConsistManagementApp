@@ -1,42 +1,60 @@
-import java.util.Arrays;
-
 /**
  * MAIN CLASS: TrainConsistManagementApp
- * Use Case 17: Sort Bogie Names Using Arrays.sort()
- * Description: Utilizes Java's optimized built-in sorting utility for alphabetical ordering.
+ * Use Case 18: Linear Search for Bogie ID (Array-Based Searching)
+ * Description: Implements a sequential search to locate a specific bogie ID in an unsorted array.
  * Author: Developer
- * Version: 17.0
+ * Version: 18.0
  */
 public class TrainConsistManagementApp {
 
     /**
-     * Sorts an array of bogie names alphabetically using the standard library.
-     * Time Complexity: O(n log n)
+     * Performs a Linear Search on an array of bogie IDs.
+     * Time Complexity: O(n)
+     * @param bogieIds Array of bogie IDs to search through
+     * @param searchKey The bogie ID to find
+     * @return true if the ID exists in the array, false otherwise
      */
-    public String[] sortBogieNames(String[] names) {
-        if (names != null) {
-            Arrays.sort(names);
+    public boolean searchBogieById(String[] bogieIds, String searchKey) {
+        if (bogieIds == null || searchKey == null) {
+            return false;
         }
-        return names;
+
+        // Sequential Traversal
+        for (String id : bogieIds) {
+            // Equality Comparison using equals() for Strings
+            if (id.equals(searchKey)) {
+                return true; // Early Termination upon match
+            }
+        }
+        return false; // Match not found after full traversal
     }
 
     public static void main(String[] args) {
         TrainConsistManagementApp app = new TrainConsistManagementApp();
 
         System.out.println("------------------------------------");
-        System.out.println(" UC17 Sort Bogie Names (Arrays.sort) ");
+        System.out.println(" UC18 Linear Search for Bogie ID    ");
         System.out.println(" ===================================\n");
 
-        String[] bogieTypes = {"Sleeper", "AC Chair", "First Class", "General", "Luxury"};
+        String[] consist = {"BG101", "BG205", "BG309", "BG412", "BG550"};
+        String searchKey = "BG309";
 
-        System.out.println("Unsorted Bogie Types: " + Arrays.toString(bogieTypes));
+        System.out.println("Available Bogie IDs: " + java.util.Arrays.toString(consist));
+        System.out.println("Searching for Bogie ID: " + searchKey);
 
-        // Using built-in optimized sorting
-        app.sortBogieNames(bogieTypes);
+        boolean found = app.searchBogieById(consist, searchKey);
 
-        System.out.println("Alphabetically Sorted: " + Arrays.toString(bogieTypes));
+        if (found) {
+            System.out.println("Result: Bogie " + searchKey + " identified in the consist.");
+        } else {
+            System.out.println("Result: Bogie " + searchKey + " not found.");
+        }
+
+        // Test case for not found
+        System.out.println("\nSearching for Bogie ID: BG999");
+        System.out.println("Result: Found? " + app.searchBogieById(consist, "BG999"));
 
         System.out.println("\n------------------------------------");
-        System.out.println("Success: Sorting optimized using Java Arrays utility.");
+        System.out.println("Success: Search operation performed via Sequential Traversal.");
     }
 }
