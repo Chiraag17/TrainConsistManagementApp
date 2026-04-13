@@ -1,5 +1,7 @@
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import java.util.ArrayList;
+import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class TrainConsistManagementAppTest {
@@ -11,53 +13,43 @@ class TrainConsistManagementAppTest {
     }
 
     @Test
-    void testRegex_ValidTrainID() {
-        // Input: TRN-1234 | Expected: true
-        assertTrue(app.isValidTrainID("TRN-1234"), "Valid Train ID should be accepted.");
+    void testSafety_AllBogiesValid() {
+        List<GoodsBogie> list = new ArrayList<>();
+        list.add(new GoodsBogie("Cylindrical", "Petroleum"));
+        list.add(new GoodsBogie("Rectangular", "Coal"));
+
+        assertTrue(app.checkSafetyCompliance(list), "Train should be safe when Cylindrical carries Petroleum.");
     }
 
     @Test
-    void testRegex_InvalidTrainIDFormat() {
-        // Test various invalid formats
-        assertFalse(app.isValidTrainID("TRAIN12"), "Missing prefix and hyphen.");
-        assertFalse(app.isValidTrainID("TRN12A"), "Contains letters in numeric part.");
-        assertFalse(app.isValidTrainID("1234-TRN"), "Reverse order should fail.");
+    void testSafety_CylindricalWithInvalidCargo() {
+        List<GoodsBogie> list = new ArrayList<>();
+        list.add(new GoodsBogie("Cylindrical", "Coal")); // VIOLATION
+
+        assertFalse(app.checkSafetyCompliance(list), "Cylindrical bogie carrying Coal must fail safety check.");
     }
 
     @Test
-    void testRegex_TrainIDDigitLengthValidation() {
-        // Must be exactly 4 digits
-        assertFalse(app.isValidTrainID("TRN-123"), "Too few digits.");
-        assertFalse(app.isValidTrainID("TRN-12345"), "Too many digits.");
+    void testSafety_NonCylindricalBogiesAllowed() {
+        List<GoodsBogie> list = new ArrayList<>();
+        list.add(new GoodsBogie("Open", "Grain"));
+        list.add(new GoodsBogie("Box", "Electronics"));
+
+        assertTrue(app.checkSafetyCompliance(list), "Non-cylindrical bogies should allow any cargo.");
     }
 
     @Test
-    void testRegex_ValidCargoCode() {
-        // Input: PET-AB | Expected: true
-        assertTrue(app.isValidCargoCode("PET-AB"), "Valid Cargo Code should be accepted.");
+    void testSafety_MixedBogiesWithViolation() {
+        List<GoodsBogie> list = new ArrayList<>();
+        list.add(new GoodsBogie("Cylindrical", "Petroleum")); // Valid
+        list.add(new GoodsBogie("Cylindrical", "Water"));     // Invalid (based on rule)
+
+        assertFalse(app.checkSafetyCompliance(list), "One violation should make the entire train unsafe.");
     }
 
     @Test
-    void testRegex_InvalidCargoCodeFormat() {
-        assertFalse(app.isValidCargoCode("PET123"), "Numeric suffix rejected.");
-        assertFalse(app.isValidCargoCode("AB-PET"), "Incorrect structure.");
-    }
-
-    @Test
-    void testRegex_CargoCodeUppercaseValidation() {
-        // Case sensitivity check
-        assertFalse(app.isValidCargoCode("PET-ab"), "Lowercase suffix should be rejected.");
-    }
-
-    @Test
-    void testRegex_EmptyInputHandling() {
-        assertFalse(app.isValidTrainID(""), "Empty Train ID is invalid.");
-        assertFalse(app.isValidCargoCode(""), "Empty Cargo Code is invalid.");
-    }
-
-    @Test
-    void testRegex_ExactPatternMatch() {
-        // matches() checks the whole string
-        assertFalse(app.isValidTrainID("TRN-1234extra"), "Trailing characters should cause failure.");
+    void testSafety_EmptyBogieList() {
+        List<GoodsBogie> emptyList = new ArrayList<>();
+        assertTrue(app.checkSafetyCompliance(emptyList), "An empty train is technically compliant (no hazards).");
     }
 }

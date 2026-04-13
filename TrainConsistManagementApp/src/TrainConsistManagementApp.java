@@ -1,62 +1,70 @@
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * GOODS BOGIE CLASS: Data Model
+ * Represents a goods bogie with its shape and assigned cargo.
+ */
+class GoodsBogie {
+    private String type; // e.g., "Cylindrical", "Rectangular"
+    private String cargo; // e.g., "Petroleum", "Coal"
+
+    public GoodsBogie(String type, String cargo) {
+        this.type = type;
+        this.cargo = cargo;
+    }
+
+    public String getType() { return type; }
+    public String getCargo() { return cargo; }
+
+    @Override
+    public String toString() {
+        return String.format("Type: %-12s | Cargo: %-10s", type, cargo);
+    }
+}
 
 /**
  * MAIN CLASS: TrainConsistManagementApp
- * Use Case 11: Validate Train ID & Cargo Codes (Regex)
- * Description: Enforces data integrity by validating input formats using Regular Expressions.
+ * Use Case 12: Safety Compliance Check for Goods Bogies
+ * Description: Uses Stream.allMatch() to enforce domain-specific cargo safety rules.
  * Author: Developer
- * Version: 11.0
+ * Version: 12.0
  */
 public class TrainConsistManagementApp {
 
-    // Regex Patterns as per business rules
-    private static final String TRAIN_ID_REGEX = "TRN-\\d{4}";
-    private static final String CARGO_CODE_REGEX = "PET-[A-Z]{2}";
-
     /**
-     * Validates if the Train ID matches the format TRN-XXXX (4 digits)
+     * Business Rule: Cylindrical bogies MUST only carry Petroleum.
+     * All other bogie types can carry any cargo.
      */
-    public boolean isValidTrainID(String trainID) {
-        if (trainID == null) return false;
-        Pattern pattern = Pattern.compile(TRAIN_ID_REGEX);
-        Matcher matcher = pattern.matcher(trainID);
-        return matcher.matches();
-    }
-
-    /**
-     * Validates if the Cargo Code matches the format PET-XX (2 uppercase letters)
-     */
-    public boolean isValidCargoCode(String cargoCode) {
-        if (cargoCode == null) return false;
-        Pattern pattern = Pattern.compile(CARGO_CODE_REGEX);
-        Matcher matcher = pattern.matcher(cargoCode);
-        return matcher.matches();
+    public boolean checkSafetyCompliance(List<GoodsBogie> bogies) {
+        return bogies.stream().allMatch(b -> {
+            if (b.getType().equalsIgnoreCase("Cylindrical")) {
+                return b.getCargo().equalsIgnoreCase("Petroleum");
+            }
+            return true; // Non-cylindrical bogies are always compliant in this UC
+        });
     }
 
     public static void main(String[] args) {
         TrainConsistManagementApp app = new TrainConsistManagementApp();
 
         System.out.println("------------------------------------");
-        System.out.println(" UC11 Validate Train ID & Cargo Codes ");
+        System.out.println(" UC12 Safety Compliance Check       ");
         System.out.println(" ===================================\n");
 
-        // Example Inputs
-        String testTrainID = "TRN-1234";
-        String testCargoCode = "PET-AB";
+        List<GoodsBogie> goodsFormation = new ArrayList<>();
+        goodsFormation.add(new GoodsBogie("Rectangular", "Coal"));
+        goodsFormation.add(new GoodsBogie("Cylindrical", "Petroleum"));
+        goodsFormation.add(new GoodsBogie("Open", "Iron Ore"));
 
-        System.out.println("Checking Train ID: " + testTrainID + " -> " +
-                (app.isValidTrainID(testTrainID) ? "VALID" : "INVALID"));
+        System.out.println("Inspecting Goods Formation:");
+        goodsFormation.forEach(System.out::println);
 
-        System.out.println("Checking Cargo Code: " + testCargoCode + " -> " +
-                (app.isValidCargoCode(testCargoCode) ? "VALID" : "INVALID"));
+        boolean isSafe = app.checkSafetyCompliance(goodsFormation);
 
-        // Invalid Examples
-        System.out.println("\nTesting Invalid Formats:");
-        System.out.println("Train ID 'TRN-12A': " + app.isValidTrainID("TRN-12A"));
-        System.out.println("Cargo Code 'PET-ab': " + app.isValidCargoCode("PET-ab"));
+        System.out.println("\nSafety Status: " + (isSafe ? "✅ COMPLIANT" : "❌ HAZARD DETECTED"));
 
         System.out.println("\n------------------------------------");
-        System.out.println("Success: Input integrity verified using Regex.");
+        System.out.println("Success: Safety rules enforced via Stream validation.");
     }
 }
