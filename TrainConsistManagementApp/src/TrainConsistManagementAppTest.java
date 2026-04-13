@@ -1,56 +1,63 @@
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import java.util.ArrayList;
-import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class TrainConsistManagementAppTest {
     private TrainConsistManagementApp app;
-    private List<Bogie> testList;
 
     @BeforeEach
     void setUp() {
         app = new TrainConsistManagementApp();
-        testList = new ArrayList<>();
-        testList.add(new Bogie("Sleeper", 72));
-        testList.add(new Bogie("AC Chair", 56));
-        testList.add(new Bogie("First Class", 24));
     }
 
     @Test
-    void testReduce_TotalSeatCalculation() {
-        // 72 + 56 + 24 = 152
-        int total = app.calculateTotalCapacity(testList);
-        assertEquals(152, total, "Total capacity should be the sum of all bogies");
+    void testRegex_ValidTrainID() {
+        // Input: TRN-1234 | Expected: true
+        assertTrue(app.isValidTrainID("TRN-1234"), "Valid Train ID should be accepted.");
     }
 
     @Test
-    void testReduce_SingleBogieCapacity() {
-        List<Bogie> singleList = new ArrayList<>();
-        singleList.add(new Bogie("General", 90));
-        int total = app.calculateTotalCapacity(singleList);
-        assertEquals(90, total, "Total should equal the capacity of the single bogie");
+    void testRegex_InvalidTrainIDFormat() {
+        // Test various invalid formats
+        assertFalse(app.isValidTrainID("TRAIN12"), "Missing prefix and hyphen.");
+        assertFalse(app.isValidTrainID("TRN12A"), "Contains letters in numeric part.");
+        assertFalse(app.isValidTrainID("1234-TRN"), "Reverse order should fail.");
     }
 
     @Test
-    void testReduce_EmptyBogieList() {
-        List<Bogie> emptyList = new ArrayList<>();
-        int total = app.calculateTotalCapacity(emptyList);
-        assertEquals(0, total, "Empty train should have 0 seating capacity");
+    void testRegex_TrainIDDigitLengthValidation() {
+        // Must be exactly 4 digits
+        assertFalse(app.isValidTrainID("TRN-123"), "Too few digits.");
+        assertFalse(app.isValidTrainID("TRN-12345"), "Too many digits.");
     }
 
     @Test
-    void testReduce_AllBogiesIncluded() {
-        int total = app.calculateTotalCapacity(testList);
-        // If we add one more, the count should increase exactly by that amount
-        testList.add(new Bogie("Extra", 10));
-        assertEquals(total + 10, app.calculateTotalCapacity(testList));
+    void testRegex_ValidCargoCode() {
+        // Input: PET-AB | Expected: true
+        assertTrue(app.isValidCargoCode("PET-AB"), "Valid Cargo Code should be accepted.");
     }
 
     @Test
-    void testReduce_OriginalListUnchanged() {
-        int originalSize = testList.size();
-        app.calculateTotalCapacity(testList);
-        assertEquals(originalSize, testList.size(), "Aggregation must not modify the original collection");
+    void testRegex_InvalidCargoCodeFormat() {
+        assertFalse(app.isValidCargoCode("PET123"), "Numeric suffix rejected.");
+        assertFalse(app.isValidCargoCode("AB-PET"), "Incorrect structure.");
+    }
+
+    @Test
+    void testRegex_CargoCodeUppercaseValidation() {
+        // Case sensitivity check
+        assertFalse(app.isValidCargoCode("PET-ab"), "Lowercase suffix should be rejected.");
+    }
+
+    @Test
+    void testRegex_EmptyInputHandling() {
+        assertFalse(app.isValidTrainID(""), "Empty Train ID is invalid.");
+        assertFalse(app.isValidCargoCode(""), "Empty Cargo Code is invalid.");
+    }
+
+    @Test
+    void testRegex_ExactPatternMatch() {
+        // matches() checks the whole string
+        assertFalse(app.isValidTrainID("TRN-1234extra"), "Trailing characters should cause failure.");
     }
 }

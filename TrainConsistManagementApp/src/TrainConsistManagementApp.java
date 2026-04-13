@@ -1,67 +1,62 @@
-import java.util.ArrayList;
-import java.util.List;
-
-/**
- * BOGIE CLASS: Data Model
- * Represents a physical bogie with attributes for name and capacity.
- */
-class Bogie {
-    private String name;
-    private int capacity;
-
-    public Bogie(String name, int capacity) {
-        this.name = name;
-        this.capacity = capacity;
-    }
-
-    public String getName() { return name; }
-    public int getCapacity() { return capacity; }
-
-    @Override
-    public String toString() {
-        return String.format("%-15s | Capacity: %d", name, capacity);
-    }
-}
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * MAIN CLASS: TrainConsistManagementApp
- * Use Case 10: Count Total Seats in Train (reduce)
- * Description: Uses map-reduce pattern to aggregate individual capacities into a total sum.
+ * Use Case 11: Validate Train ID & Cargo Codes (Regex)
+ * Description: Enforces data integrity by validating input formats using Regular Expressions.
  * Author: Developer
- * Version: 10.0
+ * Version: 11.0
  */
 public class TrainConsistManagementApp {
 
-    // Method to calculate total capacity using Stream reduce
-    public int calculateTotalCapacity(List<Bogie> bogies) {
-        return bogies.stream()
-                .map(Bogie::getCapacity)        // Step 1: Extract numeric capacity
-                .reduce(0, Integer::sum);       // Step 2: Sum the values starting from 0
+    // Regex Patterns as per business rules
+    private static final String TRAIN_ID_REGEX = "TRN-\\d{4}";
+    private static final String CARGO_CODE_REGEX = "PET-[A-Z]{2}";
+
+    /**
+     * Validates if the Train ID matches the format TRN-XXXX (4 digits)
+     */
+    public boolean isValidTrainID(String trainID) {
+        if (trainID == null) return false;
+        Pattern pattern = Pattern.compile(TRAIN_ID_REGEX);
+        Matcher matcher = pattern.matcher(trainID);
+        return matcher.matches();
+    }
+
+    /**
+     * Validates if the Cargo Code matches the format PET-XX (2 uppercase letters)
+     */
+    public boolean isValidCargoCode(String cargoCode) {
+        if (cargoCode == null) return false;
+        Pattern pattern = Pattern.compile(CARGO_CODE_REGEX);
+        Matcher matcher = pattern.matcher(cargoCode);
+        return matcher.matches();
     }
 
     public static void main(String[] args) {
         TrainConsistManagementApp app = new TrainConsistManagementApp();
 
         System.out.println("------------------------------------");
-        System.out.println(" UC10 Count Total Seats (reduce)    ");
+        System.out.println(" UC11 Validate Train ID & Cargo Codes ");
         System.out.println(" ===================================\n");
 
-        List<Bogie> trainFormation = new ArrayList<>();
-        trainFormation.add(new Bogie("Sleeper", 72));
-        trainFormation.add(new Bogie("AC Chair", 56));
-        trainFormation.add(new Bogie("First Class", 24));
-        trainFormation.add(new Bogie("General", 90));
+        // Example Inputs
+        String testTrainID = "TRN-1234";
+        String testCargoCode = "PET-AB";
 
-        System.out.println("Current Train Formation:");
-        trainFormation.forEach(System.out::println);
+        System.out.println("Checking Train ID: " + testTrainID + " -> " +
+                (app.isValidTrainID(testTrainID) ? "VALID" : "INVALID"));
 
-        // Calculate Total
-        int totalSeats = app.calculateTotalCapacity(trainFormation);
+        System.out.println("Checking Cargo Code: " + testCargoCode + " -> " +
+                (app.isValidCargoCode(testCargoCode) ? "VALID" : "INVALID"));
 
-        System.out.println("\n--- Total Capacity Analysis ---");
-        System.out.println("Total Seating Capacity: " + totalSeats + " seats");
+        // Invalid Examples
+        System.out.println("\nTesting Invalid Formats:");
+        System.out.println("Train ID 'TRN-12A': " + app.isValidTrainID("TRN-12A"));
+        System.out.println("Cargo Code 'PET-ab': " + app.isValidCargoCode("PET-ab"));
 
         System.out.println("\n------------------------------------");
-        System.out.println("Success: Total metrics aggregated for operational planning.");
+        System.out.println("Success: Input integrity verified using Regex.");
     }
 }
