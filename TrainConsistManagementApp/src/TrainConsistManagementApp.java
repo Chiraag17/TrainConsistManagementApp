@@ -1,7 +1,5 @@
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * BOGIE CLASS: Data Model
@@ -27,46 +25,43 @@ class Bogie {
 
 /**
  * MAIN CLASS: TrainConsistManagementApp
- * Use Case 9: Group Bogies by Type (Collectors.groupingBy)
- * Description: Organizes a flat list of bogies into a categorized Map by bogie name.
+ * Use Case 10: Count Total Seats in Train (reduce)
+ * Description: Uses map-reduce pattern to aggregate individual capacities into a total sum.
  * Author: Developer
- * Version: 9.0
+ * Version: 10.0
  */
 public class TrainConsistManagementApp {
 
-    // Method to group bogies by their name/type
-    public Map<String, List<Bogie>> groupBogiesByType(List<Bogie> bogies) {
+    // Method to calculate total capacity using Stream reduce
+    public int calculateTotalCapacity(List<Bogie> bogies) {
         return bogies.stream()
-                .collect(Collectors.groupingBy(Bogie::getName));
+                .map(Bogie::getCapacity)        // Step 1: Extract numeric capacity
+                .reduce(0, Integer::sum);       // Step 2: Sum the values starting from 0
     }
 
     public static void main(String[] args) {
         TrainConsistManagementApp app = new TrainConsistManagementApp();
 
         System.out.println("------------------------------------");
-        System.out.println(" UC9 Group Bogies by Type (groupingBy) ");
+        System.out.println(" UC10 Count Total Seats (reduce)    ");
         System.out.println(" ===================================\n");
 
         List<Bogie> trainFormation = new ArrayList<>();
         trainFormation.add(new Bogie("Sleeper", 72));
         trainFormation.add(new Bogie("AC Chair", 56));
-        trainFormation.add(new Bogie("Sleeper", 72));
         trainFormation.add(new Bogie("First Class", 24));
-        trainFormation.add(new Bogie("AC Chair", 56));
+        trainFormation.add(new Bogie("General", 90));
 
-        System.out.println("Flat Train Formation List:");
+        System.out.println("Current Train Formation:");
         trainFormation.forEach(System.out::println);
 
-        // Grouping logic
-        Map<String, List<Bogie>> groupedBogies = app.groupBogiesByType(trainFormation);
+        // Calculate Total
+        int totalSeats = app.calculateTotalCapacity(trainFormation);
 
-        System.out.println("\nStructured Bogie Report (Grouped):");
-        groupedBogies.forEach((type, list) -> {
-            System.out.println("Category: " + type + " | Count: " + list.size());
-            list.forEach(b -> System.out.println("  - " + b));
-        });
+        System.out.println("\n--- Total Capacity Analysis ---");
+        System.out.println("Total Seating Capacity: " + totalSeats + " seats");
 
         System.out.println("\n------------------------------------");
-        System.out.println("Success: Bogies categorized for reporting.");
+        System.out.println("Success: Total metrics aggregated for operational planning.");
     }
 }

@@ -2,7 +2,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 
 class TrainConsistManagementAppTest {
@@ -14,44 +13,44 @@ class TrainConsistManagementAppTest {
         app = new TrainConsistManagementApp();
         testList = new ArrayList<>();
         testList.add(new Bogie("Sleeper", 72));
-        testList.add(new Bogie("Sleeper", 72));
         testList.add(new Bogie("AC Chair", 56));
         testList.add(new Bogie("First Class", 24));
     }
 
     @Test
-    void testGrouping_BogiesGroupedByType() {
-        Map<String, List<Bogie>> result = app.groupBogiesByType(testList);
-        // Verify keys exist
-        assertTrue(result.containsKey("Sleeper"));
-        assertTrue(result.containsKey("AC Chair"));
-        assertTrue(result.containsKey("First Class"));
+    void testReduce_TotalSeatCalculation() {
+        // 72 + 56 + 24 = 152
+        int total = app.calculateTotalCapacity(testList);
+        assertEquals(152, total, "Total capacity should be the sum of all bogies");
     }
 
     @Test
-    void testGrouping_MultipleBogiesInSameGroup() {
-        Map<String, List<Bogie>> result = app.groupBogiesByType(testList);
-        // Verify Sleeper group has 2 bogies
-        assertEquals(2, result.get("Sleeper").size());
+    void testReduce_SingleBogieCapacity() {
+        List<Bogie> singleList = new ArrayList<>();
+        singleList.add(new Bogie("General", 90));
+        int total = app.calculateTotalCapacity(singleList);
+        assertEquals(90, total, "Total should equal the capacity of the single bogie");
     }
 
     @Test
-    void testGrouping_EmptyBogieList() {
+    void testReduce_EmptyBogieList() {
         List<Bogie> emptyList = new ArrayList<>();
-        Map<String, List<Bogie>> result = app.groupBogiesByType(emptyList);
-        assertTrue(result.isEmpty(), "Resulting map should be empty");
+        int total = app.calculateTotalCapacity(emptyList);
+        assertEquals(0, total, "Empty train should have 0 seating capacity");
     }
 
     @Test
-    void testGrouping_MapContainsCorrectKeys() {
-        Map<String, List<Bogie>> result = app.groupBogiesByType(testList);
-        assertEquals(3, result.keySet().size(), "There should be exactly 3 distinct categories");
+    void testReduce_AllBogiesIncluded() {
+        int total = app.calculateTotalCapacity(testList);
+        // If we add one more, the count should increase exactly by that amount
+        testList.add(new Bogie("Extra", 10));
+        assertEquals(total + 10, app.calculateTotalCapacity(testList));
     }
 
     @Test
-    void testGrouping_OriginalListUnchanged() {
+    void testReduce_OriginalListUnchanged() {
         int originalSize = testList.size();
-        app.groupBogiesByType(testList);
-        assertEquals(originalSize, testList.size(), "Grouping should not modify the original list");
+        app.calculateTotalCapacity(testList);
+        assertEquals(originalSize, testList.size(), "Aggregation must not modify the original collection");
     }
 }
