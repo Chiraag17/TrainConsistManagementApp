@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -26,44 +27,46 @@ class Bogie {
 
 /**
  * MAIN CLASS: TrainConsistManagementApp
- * Use Case 8: Filter Passenger Bogies Using Streams
- * Description: Uses Java Stream API to filter bogies based on a capacity threshold.
+ * Use Case 9: Group Bogies by Type (Collectors.groupingBy)
+ * Description: Organizes a flat list of bogies into a categorized Map by bogie name.
  * Author: Developer
- * Version: 8.0
+ * Version: 9.0
  */
 public class TrainConsistManagementApp {
 
-    public static List<Bogie> filterHighCapacityBogies(List<Bogie> bogies, int threshold) {
-        // Stream API: Filter bogies where capacity > threshold
+    // Method to group bogies by their name/type
+    public Map<String, List<Bogie>> groupBogiesByType(List<Bogie> bogies) {
         return bogies.stream()
-                .filter(b -> b.getCapacity() > threshold)
-                .collect(Collectors.toList());
+                .collect(Collectors.groupingBy(Bogie::getName));
     }
 
     public static void main(String[] args) {
         TrainConsistManagementApp app = new TrainConsistManagementApp();
 
         System.out.println("------------------------------------");
-        System.out.println(" UC8 Filter Passenger Bogies (Streams) ");
+        System.out.println(" UC9 Group Bogies by Type (groupingBy) ");
         System.out.println(" ===================================\n");
 
         List<Bogie> trainFormation = new ArrayList<>();
         trainFormation.add(new Bogie("Sleeper", 72));
         trainFormation.add(new Bogie("AC Chair", 56));
+        trainFormation.add(new Bogie("Sleeper", 72));
         trainFormation.add(new Bogie("First Class", 24));
-        trainFormation.add(new Bogie("General", 90));
+        trainFormation.add(new Bogie("AC Chair", 56));
 
-        System.out.println("All Available Bogies:");
+        System.out.println("Flat Train Formation List:");
         trainFormation.forEach(System.out::println);
 
-        // Applying filter logic: Capacity > 60
-        int threshold = 60;
-        List<Bogie> highCapacityBogies = app.filterHighCapacityBogies(trainFormation, threshold);
+        // Grouping logic
+        Map<String, List<Bogie>> groupedBogies = app.groupBogiesByType(trainFormation);
 
-        System.out.println("\nFiltered Bogies (Capacity > " + threshold + "):");
-        highCapacityBogies.forEach(System.out::println);
+        System.out.println("\nStructured Bogie Report (Grouped):");
+        groupedBogies.forEach((type, list) -> {
+            System.out.println("Category: " + type + " | Count: " + list.size());
+            list.forEach(b -> System.out.println("  - " + b));
+        });
 
         System.out.println("\n------------------------------------");
-        System.out.println("Success: High-capacity bogies identified using Streams.");
+        System.out.println("Success: Bogies categorized for reporting.");
     }
 }
