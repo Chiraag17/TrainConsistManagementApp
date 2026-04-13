@@ -11,45 +11,37 @@ class TrainConsistManagementAppTest {
     }
 
     @Test
-    void testBinarySearch_BogieFound() {
-        String[] consist = {"BG101", "BG205", "BG309", "BG412", "BG550"};
-        assertTrue(app.binarySearchBogie(consist, "BG309"), "Should find existing ID 'BG309'");
+    void testSearch_ThrowsExceptionWhenEmpty() {
+        String[] emptyData = {};
+        // Verifies that IllegalStateException is thrown
+        Exception exception = assertThrows(IllegalStateException.class, () -> {
+            app.searchWithValidation(emptyData, "BG101");
+        });
+        assertEquals("Search Failed: No bogies available in the train consist.", exception.getMessage());
     }
 
     @Test
-    void testBinarySearch_BogieNotFound() {
-        String[] consist = {"BG101", "BG205", "BG309", "BG412", "BG550"};
-        assertFalse(app.binarySearchBogie(consist, "BG999"), "Should return false for non-existent ID.");
+    void testSearch_AllowsSearchWhenDataExists() {
+        String[] data = {"BG101", "BG205"};
+        // Should not throw an exception
+        assertDoesNotThrow(() -> app.searchWithValidation(data, "BG101"));
     }
 
     @Test
-    void testBinarySearch_FirstElementMatch() {
-        String[] consist = {"BG101", "BG205", "BG309"};
-        assertTrue(app.binarySearchBogie(consist, "BG101"), "Should find the first element.");
+    void testSearch_BogieFoundAfterValidation() {
+        String[] data = {"BG101", "BG205", "BG309"};
+        assertTrue(app.searchWithValidation(data, "BG205"), "Should return true for existing bogie.");
     }
 
     @Test
-    void testBinarySearch_LastElementMatch() {
-        String[] consist = {"BG101", "BG205", "BG309"};
-        assertTrue(app.binarySearchBogie(consist, "BG309"), "Should find the last element.");
+    void testSearch_BogieNotFoundAfterValidation() {
+        String[] data = {"BG101", "BG205", "BG309"};
+        assertFalse(app.searchWithValidation(data, "BG999"), "Should return false for non-existent bogie.");
     }
 
     @Test
-    void testBinarySearch_SingleElementArray() {
-        String[] consist = {"BG101"};
-        assertTrue(app.binarySearchBogie(consist, "BG101"));
-    }
-
-    @Test
-    void testBinarySearch_EmptyArray() {
-        String[] emptyConsist = {};
-        assertFalse(app.binarySearchBogie(emptyConsist, "BG101"), "Empty array should return false.");
-    }
-
-    @Test
-    void testBinarySearch_UnsortedInputHandled() {
-        // Logic inside method ensures sorting before search
-        String[] unsorted = {"BG309", "BG101", "BG550", "BG205", "BG412"};
-        assertTrue(app.binarySearchBogie(unsorted, "BG205"), "Should find 'BG205' even if input is initially unsorted.");
+    void testSearch_SingleElementValidCase() {
+        String[] data = {"BG101"};
+        assertTrue(app.searchWithValidation(data, "BG101"), "Should work correctly with one bogie.");
     }
 }

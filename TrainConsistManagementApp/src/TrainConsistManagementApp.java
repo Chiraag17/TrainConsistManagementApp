@@ -2,64 +2,59 @@ import java.util.Arrays;
 
 /**
  * MAIN CLASS: TrainConsistManagementApp
- * Use Case 19: Binary Search for Bogie ID (Optimized Searching)
- * Description: Implements a divide-and-conquer strategy to locate bogies efficiently.
+ * Use Case 20: Exception Handling During Search Operations
+ * Description: Implements defensive programming to prevent searches on empty train formations.
  * Author: Developer
- * Version: 19.0
+ * Version: 20.0
  */
 public class TrainConsistManagementApp {
 
     /**
-     * Performs a Binary Search on an array of bogie IDs.
-     * Precondition: The array must be sorted.
-     * Time Complexity: O(log n)
+     * Searches for a bogie ID with state validation.
+     * @throws IllegalStateException if the consist is empty.
      */
-    public boolean binarySearchBogie(String[] bogieIds, String searchKey) {
-        if (bogieIds == null || bogieIds.length == 0 || searchKey == null) {
-            return false;
+    public boolean searchWithValidation(String[] bogieIds, String searchKey) {
+        // 1. State Validation (Fail-Fast)
+        if (bogieIds == null || bogieIds.length == 0) {
+            throw new IllegalStateException("Search Failed: No bogies available in the train consist.");
         }
 
-        // Ensuring the data is sorted (UC Requirement)
-        Arrays.sort(bogieIds);
-
-        int low = 0;
-        int high = bogieIds.length - 1;
-
-        while (low <= high) {
-            int mid = low + (high - low) / 2;
-            int comparison = searchKey.compareTo(bogieIds[mid]);
-
-            if (comparison == 0) {
-                return true; // Match found
-            } else if (comparison > 0) {
-                low = mid + 1; // Search in the right half
-            } else {
-                high = mid - 1; // Search in the left half
+        // 2. Perform Search (Linear Search for simplicity)
+        for (String id : bogieIds) {
+            if (id != null && id.equals(searchKey)) {
+                return true;
             }
         }
-        return false; // Exhausted search range
+        return false;
     }
 
     public static void main(String[] args) {
         TrainConsistManagementApp app = new TrainConsistManagementApp();
 
         System.out.println("------------------------------------");
-        System.out.println(" UC19 Binary Search for Bogie ID    ");
+        System.out.println(" UC20 Exception Handling in Search  ");
         System.out.println(" ===================================\n");
 
-        // Unsorted input example (to demonstrate handling)
-        String[] consist = {"BG309", "BG101", "BG550", "BG205", "BG412"};
-        String searchKey = "BG309";
+        // Scenario 1: Searching with Data
+        String[] activeConsist = {"BG101", "BG205", "BG309"};
+        System.out.println("Scenario 1: Searching in active consist " + Arrays.toString(activeConsist));
+        try {
+            boolean found = app.searchWithValidation(activeConsist, "BG205");
+            System.out.println("Result: Bogie found? " + found);
+        } catch (IllegalStateException e) {
+            System.err.println(e.getMessage());
+        }
 
-        System.out.println("Input IDs (Unsorted): " + Arrays.toString(consist));
-
-        boolean found = app.binarySearchBogie(consist, searchKey);
-
-        System.out.println("Sorted IDs for Search: " + Arrays.toString(consist));
-        System.out.println("Searching for: " + searchKey);
-        System.out.println("Result: " + (found ? "Bogie Found" : "Bogie Not Found"));
+        // Scenario 2: Searching an Empty Consist
+        String[] emptyConsist = {};
+        System.out.println("\nScenario 2: Searching in empty consist {}");
+        try {
+            app.searchWithValidation(emptyConsist, "BG101");
+        } catch (IllegalStateException e) {
+            System.err.println("Caught Expected Exception: " + e.getMessage());
+        }
 
         System.out.println("\n------------------------------------");
-        System.out.println("Success: Optimized lookup via Divide-and-Conquer.");
+        System.out.println("Success: Defensive search logic verified.");
     }
 }
