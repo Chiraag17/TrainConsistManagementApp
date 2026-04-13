@@ -4,42 +4,44 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class TrainConsistManagementAppTest {
     private TrainConsistManagementApp app;
-    private String[] consist;
 
     @BeforeEach
     void setUp() {
         app = new TrainConsistManagementApp();
-        consist = new String[]{"BG101", "BG205", "BG309", "BG412", "BG550"};
     }
 
     @Test
-    void testSearch_BogieFound() {
-        // Searching for an existing middle element
-        assertTrue(app.searchBogieById(consist, "BG309"), "Should return true for existing ID 'BG309'");
+    void testSearch_ThrowsExceptionWhenEmpty() {
+        String[] emptyData = {};
+        // Verifies that IllegalStateException is thrown
+        Exception exception = assertThrows(IllegalStateException.class, () -> {
+            app.searchWithValidation(emptyData, "BG101");
+        });
+        assertEquals("Search Failed: No bogies available in the train consist.", exception.getMessage());
     }
 
     @Test
-    void testSearch_BogieNotFound() {
-        // Searching for a non-existent ID
-        assertFalse(app.searchBogieById(consist, "BG999"), "Should return false for non-existent ID 'BG999'");
+    void testSearch_AllowsSearchWhenDataExists() {
+        String[] data = {"BG101", "BG205"};
+        // Should not throw an exception
+        assertDoesNotThrow(() -> app.searchWithValidation(data, "BG101"));
     }
 
     @Test
-    void testSearch_FirstElementMatch() {
-        // Verifying match at index 0
-        assertTrue(app.searchBogieById(consist, "BG101"), "Search should succeed at the first position.");
+    void testSearch_BogieFoundAfterValidation() {
+        String[] data = {"BG101", "BG205", "BG309"};
+        assertTrue(app.searchWithValidation(data, "BG205"), "Should return true for existing bogie.");
     }
 
     @Test
-    void testSearch_LastElementMatch() {
-        // Verifying match at the final index
-        assertTrue(app.searchBogieById(consist, "BG550"), "Search should succeed at the last position.");
+    void testSearch_BogieNotFoundAfterValidation() {
+        String[] data = {"BG101", "BG205", "BG309"};
+        assertFalse(app.searchWithValidation(data, "BG999"), "Should return false for non-existent bogie.");
     }
 
     @Test
-    void testSearch_SingleElementArray() {
-        // Verifying search logic with only one item
-        String[] singleConsist = {"BG101"};
-        assertTrue(app.searchBogieById(singleConsist, "BG101"), "Search should work for single element arrays.");
+    void testSearch_SingleElementValidCase() {
+        String[] data = {"BG101"};
+        assertTrue(app.searchWithValidation(data, "BG101"), "Should work correctly with one bogie.");
     }
 }

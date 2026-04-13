@@ -1,60 +1,60 @@
+import java.util.Arrays;
+
 /**
  * MAIN CLASS: TrainConsistManagementApp
- * Use Case 18: Linear Search for Bogie ID (Array-Based Searching)
- * Description: Implements a sequential search to locate a specific bogie ID in an unsorted array.
+ * Use Case 20: Exception Handling During Search Operations
+ * Description: Implements defensive programming to prevent searches on empty train formations.
  * Author: Developer
- * Version: 18.0
+ * Version: 20.0
  */
 public class TrainConsistManagementApp {
 
     /**
-     * Performs a Linear Search on an array of bogie IDs.
-     * Time Complexity: O(n)
-     * @param bogieIds Array of bogie IDs to search through
-     * @param searchKey The bogie ID to find
-     * @return true if the ID exists in the array, false otherwise
+     * Searches for a bogie ID with state validation.
+     * @throws IllegalStateException if the consist is empty.
      */
-    public boolean searchBogieById(String[] bogieIds, String searchKey) {
-        if (bogieIds == null || searchKey == null) {
-            return false;
+    public boolean searchWithValidation(String[] bogieIds, String searchKey) {
+        // 1. State Validation (Fail-Fast)
+        if (bogieIds == null || bogieIds.length == 0) {
+            throw new IllegalStateException("Search Failed: No bogies available in the train consist.");
         }
 
-        // Sequential Traversal
+        // 2. Perform Search (Linear Search for simplicity)
         for (String id : bogieIds) {
-            // Equality Comparison using equals() for Strings
-            if (id.equals(searchKey)) {
-                return true; // Early Termination upon match
+            if (id != null && id.equals(searchKey)) {
+                return true;
             }
         }
-        return false; // Match not found after full traversal
+        return false;
     }
 
     public static void main(String[] args) {
         TrainConsistManagementApp app = new TrainConsistManagementApp();
 
         System.out.println("------------------------------------");
-        System.out.println(" UC18 Linear Search for Bogie ID    ");
+        System.out.println(" UC20 Exception Handling in Search  ");
         System.out.println(" ===================================\n");
 
-        String[] consist = {"BG101", "BG205", "BG309", "BG412", "BG550"};
-        String searchKey = "BG309";
-
-        System.out.println("Available Bogie IDs: " + java.util.Arrays.toString(consist));
-        System.out.println("Searching for Bogie ID: " + searchKey);
-
-        boolean found = app.searchBogieById(consist, searchKey);
-
-        if (found) {
-            System.out.println("Result: Bogie " + searchKey + " identified in the consist.");
-        } else {
-            System.out.println("Result: Bogie " + searchKey + " not found.");
+        // Scenario 1: Searching with Data
+        String[] activeConsist = {"BG101", "BG205", "BG309"};
+        System.out.println("Scenario 1: Searching in active consist " + Arrays.toString(activeConsist));
+        try {
+            boolean found = app.searchWithValidation(activeConsist, "BG205");
+            System.out.println("Result: Bogie found? " + found);
+        } catch (IllegalStateException e) {
+            System.err.println(e.getMessage());
         }
 
-        // Test case for not found
-        System.out.println("\nSearching for Bogie ID: BG999");
-        System.out.println("Result: Found? " + app.searchBogieById(consist, "BG999"));
+        // Scenario 2: Searching an Empty Consist
+        String[] emptyConsist = {};
+        System.out.println("\nScenario 2: Searching in empty consist {}");
+        try {
+            app.searchWithValidation(emptyConsist, "BG101");
+        } catch (IllegalStateException e) {
+            System.err.println("Caught Expected Exception: " + e.getMessage());
+        }
 
         System.out.println("\n------------------------------------");
-        System.out.println("Success: Search operation performed via Sequential Traversal.");
+        System.out.println("Success: Defensive search logic verified.");
     }
 }
