@@ -1,6 +1,6 @@
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * BOGIE CLASS: Data Model
@@ -26,42 +26,44 @@ class Bogie {
 
 /**
  * MAIN CLASS: TrainConsistManagementApp
- * Use Case 7: Sort Bogies by Capacity (Comparator)
- * Description: Uses custom objects and Comparator to rank bogies by their capacity.
+ * Use Case 8: Filter Passenger Bogies Using Streams
+ * Description: Uses Java Stream API to filter bogies based on a capacity threshold.
  * Author: Developer
- * Version: 7.0
+ * Version: 8.0
  */
 public class TrainConsistManagementApp {
 
+    public static List<Bogie> filterHighCapacityBogies(List<Bogie> bogies, int threshold) {
+        // Stream API: Filter bogies where capacity > threshold
+        return bogies.stream()
+                .filter(b -> b.getCapacity() > threshold)
+                .collect(Collectors.toList());
+    }
+
     public static void main(String[] args) {
+        TrainConsistManagementApp app = new TrainConsistManagementApp();
+
         System.out.println("------------------------------------");
-        System.out.println(" UC7 Sort Bogies by Capacity (Comparator) ");
+        System.out.println(" UC8 Filter Passenger Bogies (Streams) ");
         System.out.println(" ===================================\n");
 
-        // 1. Create a List of Bogie objects
-        List<Bogie> passengerBogies = new ArrayList<>();
+        List<Bogie> trainFormation = new ArrayList<>();
+        trainFormation.add(new Bogie("Sleeper", 72));
+        trainFormation.add(new Bogie("AC Chair", 56));
+        trainFormation.add(new Bogie("First Class", 24));
+        trainFormation.add(new Bogie("General", 90));
 
-        // 2. Add passenger bogies with their capacities
-        passengerBogies.add(new Bogie("Sleeper", 72));
-        passengerBogies.add(new Bogie("AC Chair", 56));
-        passengerBogies.add(new Bogie("First Class", 24));
-        passengerBogies.add(new Bogie("General", 90));
+        System.out.println("All Available Bogies:");
+        trainFormation.forEach(System.out::println);
 
-        System.out.println("Unsorted Passenger Bogies:");
-        passengerBogies.forEach(System.out::println);
+        // Applying filter logic: Capacity > 60
+        int threshold = 60;
+        List<Bogie> highCapacityBogies = app.filterHighCapacityBogies(trainFormation, threshold);
 
-        // 3. Apply Comparator to sort by capacity (Ascending)
-        // Key Concept: Comparator.comparingInt defines the business logic for sorting
-        passengerBogies.sort(Comparator.comparingInt(Bogie::getCapacity));
+        System.out.println("\nFiltered Bogies (Capacity > " + threshold + "):");
+        highCapacityBogies.forEach(System.out::println);
 
-        // 4. Display Sorted Bogies
-        System.out.println("\nPassenger Bogies Sorted by Capacity (Low to High):");
-        for (Bogie b : passengerBogies) {
-            System.out.println(b);
-        }
-
-        // 5. Summary
         System.out.println("\n------------------------------------");
-        System.out.println("Success: Bogies ranked for optimal capacity planning.");
+        System.out.println("Success: High-capacity bogies identified using Streams.");
     }
 }
